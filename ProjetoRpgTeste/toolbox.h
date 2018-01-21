@@ -5,15 +5,22 @@
 Desafio desafios[10];
 
 void save(Personagem personagem) {
+    /*Abre o arquivo onde será salva a estrutura com
+    os dados do personagem*/
     FILE *fb = fopen("save.bin", "wb");
 
+    /*Verifica se houve algum erro na abertura do arquivo,
+    caso haja é exibida uma mensagem e o programa sai.*/
     if (!fb) {
         printf("Erro ao tentar salvar.\n");
         exit(1);
     }
 
+    /*Escreve o que está na estrutura personagem no
+    arquivo fb que foi carregado na memória*/
     fwrite(&personagem, sizeof(Personagem), 1, fb);
     printf("Salvo.\n");
+    /*Fecha o arquivo efetivando as modificações*/
     fclose(fb);
 }
 
