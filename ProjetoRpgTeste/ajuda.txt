@@ -1,0 +1,6 @@
+#################################################
+# Este é o arquivo de ajuda e serve para dar	#
+# algumas orientações ao jogador. Vou explicar  #
+# como utilizar a sorte em batalhas e, como 	#
+# funcionar o ataque				#
+#################################################

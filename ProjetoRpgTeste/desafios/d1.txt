@@ -1,0 +1,13 @@
+Você acaba de sair do Ceagri II e no estacionamento encontra o
+Professor Robson. Vocês conversam e o professor te mostra o
+seguinte algoritmo:
+
+int x(int a) {
+    return a + 4 * 2;
+}
+
+Em seguida ele te pergunta:
+-Se eu chamar essa função e passar 5 como parâmetro, qual será o
+valor que ela vai retornar?
+
+Resposta:

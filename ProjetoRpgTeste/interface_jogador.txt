@@ -1,0 +1,12 @@
+STATUS PERSONAGEM:
+-----------------------------------
+PERSONAGEM : nome_personagem
+ENERGIA: 20
+HABILIDADE: 10
+SORTE: 10
+
+DESAFIOS: (CONCLUIDOS/TOTAL): 0/10
+-----------------------------------
+1 - PROXIMO DESAFIO
+2 - SALVAR JOGO
+3 - SALVAR E SAIR

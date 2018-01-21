@@ -1,0 +1,57 @@
+# depslib dependency file v1.0
+1514561213 source:c:\users\felip\desktop\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1514561205 c:\users\felip\desktop\projetorpgteste\toolbox.h
+	"personagens.h"
+
+1514555857 c:\users\felip\desktop\projetorpgteste\personagens.h
+
+1514577445 source:c:\users\felip\desktop\2va programação\projeto-rpg\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1514597635 c:\users\felip\desktop\2va programação\projeto-rpg\projetorpgteste\toolbox.h
+	"personagens.h"
+
+1514555857 c:\users\felip\desktop\2va programação\projeto-rpg\projetorpgteste\personagens.h
+
+1516492983 source:c:\users\felip\desktop\2va_ip\projeto-rpg\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1516545348 c:\users\felip\desktop\2va_ip\projeto-rpg\projetorpgteste\toolbox.h
+	"personagens.h"
+
+1516496976 c:\users\felip\desktop\2va_ip\projeto-rpg\projetorpgteste\personagens.h
+
+1516465120 source:c:\users\felip\documents\c\projeto-rpg\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1516467413 c:\users\felip\documents\c\projeto-rpg\projetorpgteste\toolbox.h
+	"personagens.h"
+
+1516461604 c:\users\felip\documents\c\projeto-rpg\projetorpgteste\personagens.h
+
