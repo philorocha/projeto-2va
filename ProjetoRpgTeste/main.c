@@ -12,7 +12,7 @@ int main()
     srand(time(NULL));
 
     novo_jogo();
-
+    printf("Hello World");
     return 0;
 }
 
