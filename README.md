@@ -1,4 +1,3 @@
-# projeto-ip-rpg
 # Projeto RPG - RU GO!
 ## TODO List
 * Criar histórias que conterão desafios/batalhas:
