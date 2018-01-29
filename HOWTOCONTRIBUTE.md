@@ -103,7 +103,7 @@ O primeiro passo é você criar um novo branch (ramo) que conterá o código que
 
 ![Merge](./images/target-merge-branches.png)   
 
-####Criando um branch  
+#### Criando um branch  
 
 __Passo 1__: Para criar o branch a sintaxe é a seguinte:  
 
