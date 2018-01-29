@@ -116,7 +116,7 @@ Dê um nome que deixe claro a sua funcionalidade, por exemplo, se fosse implemen
 __Passo 2__: Agora é só programar! Implemente a tarefa que você decidiu fazer até que esteja tudo pronto. :computer:  
 
 
-###Terminei de codificar, e agora?  
+### Terminei de codificar, e agora?  
 
 Quando você terminar de codar a tarefa que escolheu, precisa fazer com que o git 'saiba' dessas mudanças. Vamos então fazer isso.  
 
