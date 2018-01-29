@@ -1,7 +1,7 @@
 # Projeto RPG - RU GO!
 ## TODO List
 * Criar histórias que conterão desafios/batalhas:
-   * ~~Desafio 1~~
+   [x] Desafio 1
    * Desafio 2
    * Desafio 3
    * Desafio 4
