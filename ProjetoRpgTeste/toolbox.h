@@ -3,6 +3,23 @@
 #include "personagens.h"
 
 Desafio desafios[10];
+int concluidos = 0;
+
+void introducao(){
+    FILE *intro = fopen("introducao.txt", "r");
+    char msg[1000];
+
+    if (!intro){
+        printf("Erro ao tentar ler o arquivo! \n");
+        exit(1);
+    }
+
+    while(fgets(msg, sizeof(msg), intro) != NULL){
+        printf("%s", msg);
+    }
+
+    fclose(intro);
+}
 
 void save(Personagem personagem) {
     /*Abre o arquivo onde será salva a estrutura com
@@ -40,7 +57,6 @@ Personagem load() {
     fclose(fb);
 
     /*Carregando desafios*/
-    int i;
 
     FILE *df = fopen("desafios.bin", "rb");
 
@@ -49,13 +65,14 @@ Personagem load() {
         exit(1);
     }
 
-    for (i = 0; i < 1; i++) {
-        fseek(df, sizeof(Desafio) * i, SEEK_SET);
-        /*Os desafios do arquivo desafios.bin são carregados na variável global desafios
-        que é um vetor de Desafio com 10 posições*/
-        fread(&desafios[i], sizeof(Desafio), 1, df);
-    }
+    int cont = 0;
 
+    while (fread(&desafios[cont], sizeof(Desafio), 1, df)) {
+        if (desafios[cont].concluido) {
+            concluidos += 1;
+        }
+        cont++;
+    }
     fclose(df);
 
     /*Retornando estrutura do tipo Personagem*/
@@ -80,12 +97,12 @@ void ajuda() {
     fclose(f);
 }
 
-void interface(Personagem *p, Criatura *c) {
+void interface(Personagem *p, Desafio *d) {
     printf("#################################################\n");
     printf("# PERSONAGEM\t\t     CRIATURA (INIMIGO) #\n");
-    printf("# ENERGIA: %d\t\t     ENERGIA: %2d        #\n", (*p).energia, (*c).energia);
-    printf("# HABILIDADE: %2d\t     HABILIDADE: %2d\t#\n", (*p).habilidade, (*c).habilidade);
-    printf("# SORTE: %d\t\t\t\t\t#\n", (*p).sorte);
+    printf("# ENERGIA: %d\t\t     ENERGIA: %2d        #\n", p->energia, d->criatura.energia);
+    printf("# HABILIDADE: %2d\t     HABILIDADE: %2d\t#\n", p->habilidade, d->criatura.habilidade);
+    printf("# SORTE: %d\t\t\t\t\t#\n", p->sorte);
     printf("#################################################\n");
     printf("#                  CONTROLES                    #\n");
     printf("# 1 - ATACAR                   3 - AJUDA (DICAS)#\n");
@@ -134,13 +151,14 @@ int testarSorte(Personagem *p) {
     return 0;
 }
 
-void batalha(Personagem *p, Criatura *c) {
-    while ((*p).energia > 0 && (*c).energia > 0) {
-        int ataque_personagem = (*p).habilidade + dado() + dado();
-        int ataque_criatura = (*c).habilidade + dado() + dado();
+void batalha(Personagem *p, Desafio *d) {
+    system("cls");
+    while (p->energia > 0 && d->criatura.energia > 0) {
+        int ataque_personagem = p->habilidade + dado() + dado();
+        int ataque_criatura = d->criatura.habilidade + dado() + dado();
         char opcao;
         do {
-            interface(p, c);
+            interface(p, d);
             scanf("%c", &opcao);
             fflush(stdin);
             switch (opcao) {
@@ -153,25 +171,31 @@ void batalha(Personagem *p, Criatura *c) {
                             switch (opcao_sorte) {
                                 case '1':
                                     if (testarSorte(p)) {
-                                        (*c).energia -= 4;
-                                        if ((*c).energia <= 0) {
+                                        d->criatura.energia -= 4;
+                                        if (d->criatura.energia <= 0) {
                                             printf("VOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            d->concluido = 1;
+                                            concluidos += 1;
                                         } else {
                                             printf("VOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\n");
                                         }
                                     } else {
-                                        (*c).energia -= 1;
-                                        if ((*c).energia <= 0) {
+                                        d->criatura.energia -= 1;
+                                        if (d->criatura.energia <= 0) {
                                             printf("VOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            d->concluido = 1;
+                                            concluidos += 1;
                                         } else {
                                             printf("VOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\n");
                                         }
                                     }
                                     break;
                                 case '2':
-                                    (*c).energia -= 2;
-                                    if ((*c).energia <= 0) {
+                                    d->criatura.energia -= 2;
+                                    if (d->criatura.energia <= 0) {
                                         printf("VOCÊ FERIU A CRIATURA EM 2.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                        d->concluido = 1;
+                                        concluidos += 1;
                                     } else {
                                         printf("VOCÊ FERIU A CRIATURA EM 2.\n");
                                     }
@@ -187,15 +211,15 @@ void batalha(Personagem *p, Criatura *c) {
                         switch (opcao_sorte) {
                             case '1':
                                 if (testarSorte(p)) {
-                                    (*p).energia -= 1;
-                                    if ((*p).energia <= 0) {
+                                    p->energia -= 1;
+                                    if (p->energia <= 0) {
                                         printf("VOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\nVOCÊ MORREU!\n");
                                     } else {
                                         printf("VOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\n");
                                     }
                                 } else {
-                                    (*p).energia -= 3;
-                                    if ((*p).energia <= 0) {
+                                    p->energia -= 3;
+                                    if (p->energia <= 0) {
                                         printf("VOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\nVOCÊ MORREU!\n");
                                     } else {
                                         printf("VOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\n");
@@ -203,8 +227,8 @@ void batalha(Personagem *p, Criatura *c) {
                                 }
                                 break;
                             case '2':
-                                (*p).energia -= 2;
-                                if ((*p).energia <= 0) {
+                                p->energia -= 2;
+                                if (p->energia <= 0) {
                                     printf("A CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\nVOCÊ MORREU!\n");
                                 } else {
                                     printf("A CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\n");
@@ -241,14 +265,14 @@ void desafio(Personagem *personagem, Desafio *d) {
 
     int res;
 
-    printf("%s", (*d).texto);
+    printf("%s", d->texto);
     printf("Resposta: ");
     scanf("%d", &res);
 
-    if (res == (*d).resposta) {
+    if (res == d->resposta) {
         printf("Parabéns você acertou.\n");
-        (*d).concluido = 1;
-
+        d->concluido = 1;
+        concluidos += 1;
     } else {
         printf("Voce errou.\n");
     }
@@ -267,7 +291,7 @@ void interface_personagem(Personagem personagem) {
         printf("HABILIDADE: %d\n", personagem.habilidade);
         printf("SORTE: %d\n", personagem.sorte);
         printf("\n");
-        printf("DESAFIOS (CONCLUIDOS/TOTAL): 0/10\n");
+        printf("DESAFIOS (CONCLUIDOS/TOTAL): %d/10\n", concluidos);
         printf("-----------------------------------\n");
         printf("1 - INICIAR DESAFIO\n");
         printf("2 - SALVAR JOGO\n");
@@ -279,11 +303,15 @@ void interface_personagem(Personagem personagem) {
 
         switch (opcao) {
             case '1':
-                for (i = 0; i < 1; i++) {
-                    if (!desafios[i].concluido) {
-                        printf("Encontrei um desafio não concluido.\n");
-                        printf("%s", desafios[i].texto);
-                        system("pause");
+                for (i = 0; i < 3; i++) {
+                    if (desafios[i].concluido != 1) {
+                        if (desafios[i].tipo == 1) {
+                            desafio(&personagem, &desafios[i]);
+                            break;
+                        } else {
+                            batalha(&personagem, &desafios[i]);
+                            break;
+                        }
                     }
                 }
                 break;
@@ -304,23 +332,23 @@ void interface_personagem(Personagem personagem) {
 void novo_jogo() {
     Personagem jogador;
 
-    FILE *f = fopen("tela_inicial.txt", "r");
-
-    if (f == NULL) {
-        printf("Erro ao tentar abrir o arquivo.\n");
-        exit(1);
-    }
-
-    char mensagem[2200];
-
-    system("cls");
-    fread(mensagem, sizeof(mensagem), 1, f);
-
-    fclose(f);
-
     char opcao;
     do {
-        printf("%s", mensagem);
+        FILE *f = fopen("tela_inicial.txt", "r");
+
+        if (f == NULL) {
+            printf("Erro ao tentar abrir o arquivo.\n");
+            exit(1);
+        }
+
+        char mensagem[1000];
+
+        system("cls");
+        while (fgets(mensagem, sizeof(mensagem), f) != NULL) {
+            printf("%s", mensagem);
+        }
+
+        fclose(f);
         scanf("%c", &opcao);
         fflush(stdin);
         switch (opcao) {
@@ -334,6 +362,9 @@ void novo_jogo() {
                 jogador.energia = dado() + dado() + 12;
                 jogador.sorte = dado() + 6;
                 save(jogador);
+                system("cls");
+                introducao();
+                system("pause");
                 interface_personagem(jogador);
                 break;
             case '2':
