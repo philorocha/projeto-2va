@@ -21,6 +21,51 @@ void introducao(){
     fclose(intro);
 }
 
+void save_desafios(Desafio desafios[]) {
+    FILE *db = fopen("desafios.bin", "wb");
+
+    if (!db) {
+        printf("Erro ao tentar salvar.\n");
+        exit(1);
+    }
+
+    fwrite(desafios, sizeof(Desafio), 10, db);
+
+    fclose(db);
+}
+
+void load_desafios() {
+    FILE *db = fopen("desafios.bin", "rb");
+
+    if (!db) {
+        printf("Erro ao tentar carregar desafios!\n");
+        exit(1);
+    }
+    int cont = 0;
+
+    while(fread(&desafios[cont], sizeof(Desafio), 1, db)) {
+        if (desafios[cont].concluido) {
+            concluidos += 1;
+        }
+        cont++;
+    }
+
+    fclose(db);
+}
+
+void load_desafios_bck() {
+    FILE *db = fopen("desafios_bck.bin", "rb");
+
+    if (!db) {
+        printf("Erro ao tentar carregar desafios_bck.bin!\n");
+        exit(1);
+    }
+
+    fread(desafios, sizeof(Desafio), 10, db);
+
+    fclose(db);
+}
+
 void save(Personagem personagem) {
     /*Abre o arquivo onde será salva a estrutura com
     os dados do personagem*/
@@ -55,25 +100,6 @@ Personagem load() {
     fread(&personagem, sizeof(Personagem), 1, fb);
     printf("Carregado.\n");
     fclose(fb);
-
-    /*Carregando desafios*/
-
-    FILE *df = fopen("desafios.bin", "rb");
-
-    if (!df) {
-        printf("Erro ao tentar abrir arquivo.\n");
-        exit(1);
-    }
-
-    int cont = 0;
-
-    while (fread(&desafios[cont], sizeof(Desafio), 1, df)) {
-        if (desafios[cont].concluido) {
-            concluidos += 1;
-        }
-        cont++;
-    }
-    fclose(df);
 
     /*Retornando estrutura do tipo Personagem*/
     return personagem;
@@ -153,6 +179,8 @@ int testarSorte(Personagem *p) {
 
 void batalha(Personagem *p, Desafio *d) {
     system("cls");
+    printf("%s", d->texto);
+    system("pause");
     while (p->energia > 0 && d->criatura.energia > 0) {
         int ataque_personagem = p->habilidade + dado() + dado();
         int ataque_criatura = d->criatura.habilidade + dado() + dado();
@@ -303,7 +331,7 @@ void interface_personagem(Personagem personagem) {
 
         switch (opcao) {
             case '1':
-                for (i = 0; i < 3; i++) {
+                for (i = 0; i < 10; i++) {
                     if (desafios[i].concluido != 1) {
                         if (desafios[i].tipo == 1) {
                             desafio(&personagem, &desafios[i]);
@@ -317,9 +345,11 @@ void interface_personagem(Personagem personagem) {
                 break;
             case '2':
                 save(personagem);
+                save_desafios(desafios);
                 break;
             case '3':
                 save(personagem);
+                save_desafios(desafios);
                 break;
             default:
                 printf("Opção inválida!\n");
@@ -329,26 +359,30 @@ void interface_personagem(Personagem personagem) {
 
 }
 
+void tela_inicial() {
+    FILE *f = fopen("tela_inicial.txt", "r");
+
+    if (f == NULL) {
+        printf("Erro ao tentar abrir o arquivo.\n");
+        exit(1);
+    }
+
+    char mensagem[1000];
+
+    system("cls");
+    while (fgets(mensagem, sizeof(mensagem), f) != NULL) {
+        printf("%s", mensagem);
+    }
+
+    fclose(f);
+}
+
 void novo_jogo() {
     Personagem jogador;
 
     char opcao;
     do {
-        FILE *f = fopen("tela_inicial.txt", "r");
-
-        if (f == NULL) {
-            printf("Erro ao tentar abrir o arquivo.\n");
-            exit(1);
-        }
-
-        char mensagem[1000];
-
-        system("cls");
-        while (fgets(mensagem, sizeof(mensagem), f) != NULL) {
-            printf("%s", mensagem);
-        }
-
-        fclose(f);
+        tela_inicial();
         scanf("%c", &opcao);
         fflush(stdin);
         switch (opcao) {
@@ -362,6 +396,7 @@ void novo_jogo() {
                 jogador.energia = dado() + dado() + 12;
                 jogador.sorte = dado() + 6;
                 save(jogador);
+                load_desafios_bck();
                 system("cls");
                 introducao();
                 system("pause");
@@ -369,6 +404,7 @@ void novo_jogo() {
                 break;
             case '2':
                 jogador = load();
+                load_desafios();
                 interface_personagem(jogador);
                 break;
             default:
