@@ -55,7 +55,7 @@
 
 1516461604 c:\users\felip\documents\c\projeto-rpg\projetorpgteste\personagens.h
 
-1518010560 source:c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\main.c
+1518090045 source:c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\main.c
 	<stdio.h>
 	<stdlib.h>
 	<locale.h>
@@ -64,7 +64,8 @@
 	"toolbox.h"
 	"personagens.h"
 
-1518058017 c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\toolbox.h
+1518233367 c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\toolbox.h
+	<conio.h>
 	"personagens.h"
 
 1518056642 c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\personagens.h

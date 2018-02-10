@@ -1,5 +1,6 @@
 #ifndef TOOLBOX_H_INCLUDED
 #define TOOLBOX_H_INCLUDED
+#include <conio.h>
 #include "personagens.h"
 
 Desafio desafios[10];
@@ -67,27 +68,20 @@ void load_desafios_bck() {
 }
 
 void save(Personagem personagem) {
-    /*Abre o arquivo onde será salva a estrutura com
-    os dados do personagem*/
     FILE *fb = fopen("save.bin", "wb");
 
-    /*Verifica se houve algum erro na abertura do arquivo,
-    caso haja é exibida uma mensagem e o programa sai.*/
     if (!fb) {
         printf("Erro ao tentar salvar.\n");
         exit(1);
     }
 
-    /*Escreve o que está na estrutura personagem no
-    arquivo fb que foi carregado na memória*/
     fwrite(&personagem, sizeof(Personagem), 1, fb);
-    printf("Salvo.\n");
-    /*Fecha o arquivo efetivando as modificações*/
+    printf("\nSalvo.\n");
+
     fclose(fb);
 }
 
 Personagem load() {
-    /*Carregando o personagem*/
     Personagem personagem;
 
     FILE *fb = fopen("save.bin", "rb");
@@ -98,17 +92,16 @@ Personagem load() {
     }
 
     fread(&personagem, sizeof(Personagem), 1, fb);
-    printf("Carregado.\n");
+    printf("\nCarregado.\n");
     fclose(fb);
 
-    /*Retornando estrutura do tipo Personagem*/
     return personagem;
 }
 
 void ajuda() {
     FILE *f = fopen("ajuda.txt", "r");
 
-    if (f == NULL) {
+    if (!f) {
         printf("Erro ao tentar abrir o arquivo.\n");
         exit(1);
     }
@@ -125,20 +118,19 @@ void ajuda() {
 
 void interface(Personagem *p, Desafio *d) {
     printf("#################################################\n");
-    printf("# PERSONAGEM\t\t     CRIATURA (INIMIGO) #\n");
-    printf("# ENERGIA: %d\t\t     ENERGIA: %2d        #\n", p->energia, d->criatura.energia);
-    printf("# HABILIDADE: %2d\t     HABILIDADE: %2d\t#\n", p->habilidade, d->criatura.habilidade);
-    printf("# SORTE: %d\t\t\t\t\t#\n", p->sorte);
+    printf("# %-20s  VS %20s #\n", p->nome, d->criatura.nome);
+    printf("# ENERGIA: %-20dENERGIA: %7d #\n", p->energia, d->criatura.energia);
+    printf("# HABILIDADE: %-17dHABILIDADE: %4d\t#\n", p->habilidade, d->criatura.habilidade);
+    printf("# SORTE: %-38d #\n", p->sorte);
     printf("#################################################\n");
     printf("#                  CONTROLES                    #\n");
-    printf("# 1 - ATACAR                   3 - AJUDA (DICAS)#\n");
-    printf("# 2 - FUGIR                                     #\n");
+    printf("# 1 - ATACAR                   2 - AJUDA (DICAS)#\n");
     printf("#################################################\n");
     printf("OPÇÃO: ");
 }
 
 void interface_sorte_ataque() {
-    printf("#################################################\n");
+    printf("\n#################################################\n");
     printf("# DESEJA TESTAR A SORTE PARA CAUSAR MAIS DANO?	#\n");
     printf("# SE FOR SORTUDO CAUSA O DOBRO DE DANO (4 PTS)  #\n");
     printf("# SE FOR AZARADO CAUSA 1 PONTO A MENOS (1 PT)	#\n");
@@ -151,7 +143,7 @@ void interface_sorte_ataque() {
 }
 
 void interface_sorte_energia() {
-    printf("#################################################\n");
+    printf("\n#################################################\n");
     printf("# DESEJA TESTAR A SORTE PARA DIMINUIR O DANO	#\n");
     printf("# RECEBIDO?                                     #\n");
     printf("# SE FOR SORTUDO DIMINUI EM 1PT O DANO RECEBIDO #\n");
@@ -177,6 +169,12 @@ int testarSorte(Personagem *p) {
     return 0;
 }
 
+int valida_sorte(Personagem *p) {
+    if (p->sorte > 0) return 1;
+
+    return 0;
+}
+
 void batalha(Personagem *p, Desafio *d) {
     system("cls");
     printf("%s", d->texto);
@@ -184,107 +182,123 @@ void batalha(Personagem *p, Desafio *d) {
     while (p->energia > 0 && d->criatura.energia > 0) {
         int ataque_personagem = p->habilidade + dado() + dado();
         int ataque_criatura = d->criatura.habilidade + dado() + dado();
-        char opcao;
+        int opcao;
         do {
             interface(p, d);
-            scanf("%c", &opcao);
-            fflush(stdin);
+            opcao = getche();
             switch (opcao) {
                 case '1':
                     if (ataque_personagem > ataque_criatura) {
+                        int opcao_sorte;
+                        do {
                             interface_sorte_ataque();
-                            char opcao_sorte;
-                            scanf("%c", &opcao_sorte);
-                            fflush(stdin);
-                            switch (opcao_sorte) {
-                                case '1':
+                            opcao_sorte = getche();
+                            if (opcao_sorte != '1' && opcao_sorte != '2') {
+                                system("cls");
+                                printf("\nOpção Inválida!\nPressione qualquer tecla para continuar...");
+                                getche();
+                            }
+                        } while (opcao_sorte != '1' && opcao_sorte != '2');
+                        switch (opcao_sorte) {
+                            case '1':
+                                if (valida_sorte(p)) {
                                     if (testarSorte(p)) {
                                         d->criatura.energia -= 4;
                                         if (d->criatura.energia <= 0) {
-                                            printf("VOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            printf("\nVOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
                                             d->concluido = 1;
                                             concluidos += 1;
                                         } else {
-                                            printf("VOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\n");
+                                            printf("\nVOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\n");
                                         }
                                     } else {
                                         d->criatura.energia -= 1;
                                         if (d->criatura.energia <= 0) {
-                                            printf("VOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            printf("\nVOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
                                             d->concluido = 1;
                                             concluidos += 1;
                                         } else {
-                                            printf("VOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\n");
+                                            printf("\nVOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\n");
                                         }
                                     }
-                                    break;
-                                case '2':
-                                    d->criatura.energia -= 2;
-                                    if (d->criatura.energia <= 0) {
-                                        printf("VOCÊ FERIU A CRIATURA EM 2.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
-                                        d->concluido = 1;
-                                        concluidos += 1;
-                                    } else {
-                                        printf("VOCÊ FERIU A CRIATURA EM 2.\n");
-                                    }
-                                    break;
-                                default:
-                                    printf("OPÇÃO INVÁLIDA!\n");
-                            }
-                            system("pause");
+                                } else {
+                                    printf("\nVOCÊ NÃO TEM PONTOS DE SORTE PARA USAR!\n");
+                                }
+                                break;
+                            case '2':
+                                d->criatura.energia -= 2;
+                                if (d->criatura.energia <= 0) {
+                                    printf("\nVOCÊ FERIU A CRIATURA EM 2.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                    d->concluido = 1;
+                                    concluidos += 1;
+                                } else {
+                                    printf("\nVOCÊ FERIU A CRIATURA EM 2.\n");
+                                }
+                                break;
+                            default:
+                                printf("\nOPÇÃO INVÁLIDA!\n");
+                        }
+                        system("pause");
                     } else if (ataque_personagem < ataque_criatura) {
-                        interface_sorte_energia();
-                        char opcao_sorte;
-                        scanf("%c", &opcao_sorte);
+                        int opcao_sorte;
+                        do {
+                            interface_sorte_energia();
+                            opcao_sorte = getche();
+                            if (opcao_sorte != '1' && opcao_sorte != '2') {
+                                system("cls");
+                                printf("\nOpção Inválida!\nPressione qualquer tecla para continuar...");
+                                getche();
+                            }
+                        } while (opcao_sorte != '1' && opcao_sorte != '2');
                         switch (opcao_sorte) {
                             case '1':
-                                if (testarSorte(p)) {
-                                    p->energia -= 1;
-                                    if (p->energia <= 0) {
-                                        printf("VOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\nVOCÊ MORREU!\n");
+                                if (valida_sorte(p)) {
+                                    if (testarSorte(p)) {
+                                        p->energia -= 1;
+                                        if (p->energia <= 0) {
+                                            printf("\nVOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\nVOCÊ MORREU!\n");
+                                        } else {
+                                            printf("\nVOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\n");
+                                        }
                                     } else {
-                                        printf("VOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\n");
+                                        p->energia -= 3;
+                                        if (p->energia <= 0) {
+                                            printf("\nVOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\nVOCÊ MORREU!\n");
+                                        } else {
+                                            printf("\nVOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\n");
+                                        }
                                     }
                                 } else {
-                                    p->energia -= 3;
-                                    if (p->energia <= 0) {
-                                        printf("VOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\nVOCÊ MORREU!\n");
-                                    } else {
-                                        printf("VOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\n");
-                                    }
+                                    printf("\nVOCÊ NÃO TEM PONTOS DE SORTE PARA USAR!\n");
                                 }
                                 break;
                             case '2':
                                 p->energia -= 2;
                                 if (p->energia <= 0) {
-                                    printf("A CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\nVOCÊ MORREU!\n");
+                                    printf("\nA CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\nVOCÊ MORREU!\n");
                                 } else {
-                                    printf("A CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\n");
+                                    printf("\nA CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\n");
                                 }
                                 break;
                             default:
-                                printf("OPÇÃO INVÁLIDA!\n");
+                                printf("\nOPÇÃO INVÁLIDA!\n");
                         }
                         system("pause");
                     } else {
-                        printf("AMBOS DEFENDERAM O ATAQUE.\n");
+                        printf("\nAMBOS DEFENDERAM O ATAQUE.\n");
                         system("pause");
                     }
                     break;
                 case '2':
-                    printf("Não implementado ainda.\n");
-                    system("pause");
-                    break;
-                case '3':
                     ajuda();
                     system("pause");
                     break;
                 default:
-                    printf("Opção inválida.\n");
-                    getchar();
+                    printf("\nOpção inválida. Pressione qualquer tecla para continuar...");
+                    getche();
             }
             system("cls");
-        } while(opcao != '1' && opcao != '2' && opcao != '3' && opcao != '4');
+        } while(opcao != '1' && opcao != '2');
     }
 }
 
@@ -299,17 +313,19 @@ void desafio(Personagem *personagem, Desafio *d) {
 
     if (res == d->resposta) {
         printf("Parabéns você acertou.\n");
+        system("pause");
         d->concluido = 1;
         concluidos += 1;
     } else {
         printf("Voce errou.\n");
+        system("pause");
     }
     fflush(stdin);
 }
 
 void interface_personagem(Personagem personagem) {
     int i;
-    char opcao;
+    int opcao;
     do {
         system("cls");
         printf("STATUS DO PERSONAGEM:\n");
@@ -323,11 +339,10 @@ void interface_personagem(Personagem personagem) {
         printf("-----------------------------------\n");
         printf("1 - INICIAR DESAFIO\n");
         printf("2 - SALVAR JOGO\n");
-        printf("3 - SALVAR E SAIR\n");
+        printf("3 - SAIR\n");
         printf("OPÇÃO: ");
 
-        scanf("%c", &opcao);
-        fflush(stdin);
+        opcao = getche();
 
         switch (opcao) {
             case '1':
@@ -348,8 +363,6 @@ void interface_personagem(Personagem personagem) {
                 save_desafios(desafios);
                 break;
             case '3':
-                save(personagem);
-                save_desafios(desafios);
                 break;
             default:
                 printf("Opção inválida!\n");
@@ -380,15 +393,14 @@ void tela_inicial() {
 void novo_jogo() {
     Personagem jogador;
 
-    char opcao;
+    int opcao;
     do {
         tela_inicial();
-        scanf("%c", &opcao);
-        fflush(stdin);
+        opcao = getche();
         switch (opcao) {
             case '1':
                 do {
-                    printf("Nome do Jogador: ");
+                    printf("\nNome do Jogador: ");
                     fflush(stdin);
                     gets(jogador.nome);
                 } while (strlen(jogador.nome) < 1);
@@ -408,7 +420,7 @@ void novo_jogo() {
                 interface_personagem(jogador);
                 break;
             default:
-                printf("Opção inválida.\n");
+                printf("\nOpção inválida.\n");
                 system("pause");
                 system("cls");
         }
