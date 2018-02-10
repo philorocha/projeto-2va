@@ -72,3 +72,18 @@
 
 1517434033 c:\users\felip\desktop\2va_ip\projeto-ip-rpg\projetorpgteste\historia.h
 
+1518275302 source:c:\users\felip\documents\c\projeto-ip-rpg\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1518278674 c:\users\felip\documents\c\projeto-ip-rpg\projetorpgteste\toolbox.h
+	<conio.h>
+	"personagens.h"
+
+1518275302 c:\users\felip\documents\c\projeto-ip-rpg\projetorpgteste\personagens.h
+

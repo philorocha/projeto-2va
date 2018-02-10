@@ -365,7 +365,7 @@ void interface_personagem(Personagem personagem) {
             case '3':
                 break;
             default:
-                printf("Opção inválida!\n");
+                printf("\nOpção inválida!\n");
                 system("pause");
         }
     } while (opcao != '3');
