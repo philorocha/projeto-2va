@@ -323,10 +323,35 @@ void desafio(Personagem *personagem, Desafio *d) {
     fflush(stdin);
 }
 
+void game_over() {
+    FILE *f = fopen("gameover.txt", "r");
+
+    if (!f) {
+        printf("Erro ao tentar ler o arquivo gameover.txt!\n");
+        exit(1);
+    }
+
+    char msg[500];
+
+    while (fgets(msg, sizeof(msg), f) != NULL) {
+        printf("%s", msg);
+    }
+
+    fclose(f);
+}
+
 void interface_personagem(Personagem personagem) {
     int i;
     int opcao;
     do {
+        if (concluidos == 10) {
+            printf("VOCÊ VENCEU O JOGO! PARABÉNS\n");
+            break;
+        }
+        if (personagem.energia <= 0) {
+            game_over();
+            break;
+        }
         system("cls");
         printf("STATUS DO PERSONAGEM:\n");
         printf("-----------------------------------\n");
