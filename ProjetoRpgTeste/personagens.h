@@ -5,7 +5,10 @@ typedef struct {
     char nome[20];
     int habilidade;
     int energia;
+    int energia_max;
     int sorte;
+    int pocao_energia[5];
+    int pocoes_utilizadas;
 } Personagem;
 
 typedef struct {

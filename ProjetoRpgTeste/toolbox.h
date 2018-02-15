@@ -3,8 +3,45 @@
 #include <conio.h>
 #include "personagens.h"
 
+#define MAX_POTIONS 5
+#define POTION_VALUE 4
+
 Desafio desafios[10];
 int concluidos = 0;
+
+void getPocaoEnergia(Personagem *p) {
+    int i;
+
+    for (i = 0; i < MAX_POTIONS; i++) {
+        p->pocao_energia[i] = POTION_VALUE;
+    }
+}
+
+void usarPocaoEnergia(Personagem *p) {
+    int i;
+
+    for (i = 0; i < MAX_POTIONS; i++) {
+        if (p->pocao_energia[4] == 0) {
+            printf("\nVOCÊ NÃO TEM MAIS POÇÕES DE ENERGIA!\n");
+            break;
+        }
+        if (p->pocao_energia[i] != 0) {
+            if (p->energia + p->pocao_energia[i] > p->energia_max) {
+                p->energia = p->energia_max;
+                printf("\nVOCÊ RECUPEROU %d PONTOS DE ENERGIA\n", p->pocao_energia[i]);
+                p->pocao_energia[i] = 0;
+                p->pocoes_utilizadas += 1;
+                break;
+            } else {
+                p->energia += p->pocao_energia[i];
+                printf("\nVOCÊ RECUPEROU %d PONTOS DE ENERGIA\n", p->pocao_energia[i]);
+                p->pocao_energia[i] = 0;
+                p->pocoes_utilizadas += 1;
+                break;
+            }
+        }
+    }
+}
 
 void introducao(){
     FILE *intro = fopen("introducao.txt", "r");
@@ -98,33 +135,15 @@ Personagem load() {
     return personagem;
 }
 
-void ajuda() {
-    FILE *f = fopen("ajuda.txt", "r");
-
-    if (!f) {
-        printf("Erro ao tentar abrir o arquivo.\n");
-        exit(1);
-    }
-
-    char mensagem[1000];
-
-    system("cls");
-    while(fgets(mensagem, 1000, f) != NULL){
-        printf("%s", mensagem);
-    }
-
-    fclose(f);
-}
-
 void interface(Personagem *p, Desafio *d) {
     printf("#################################################\n");
     printf("# %-20s  VS %20s #\n", p->nome, d->criatura.nome);
-    printf("# ENERGIA: %-20dENERGIA: %7d #\n", p->energia, d->criatura.energia);
+    printf("# ENERGIA: %-2d/%-17dENERGIA: %7d #\n", p->energia, p->energia_max, d->criatura.energia);
     printf("# HABILIDADE: %-17dHABILIDADE: %4d\t#\n", p->habilidade, d->criatura.habilidade);
     printf("# SORTE: %-38d #\n", p->sorte);
     printf("#################################################\n");
     printf("#                  CONTROLES                    #\n");
-    printf("# 1 - ATACAR                   2 - AJUDA (DICAS)#\n");
+    printf("# 1 - ATACAR          2 - USAR POÇÃO DE ENERGIA #\n");
     printf("#################################################\n");
     printf("OPÇÃO: ");
 }
@@ -161,11 +180,11 @@ int dado() {
 }
 
 int testarSorte(Personagem *p) {
-    if (dado() + dado() <= (*p).sorte) {
-        (*p).sorte -= 1;
+    if (dado() + dado() <= p->sorte) {
+        p->sorte -= 1;
         return 1;
     }
-    (*p).sorte -= 1;
+    p->sorte -= 1;
     return 0;
 }
 
@@ -205,20 +224,20 @@ void batalha(Personagem *p, Desafio *d) {
                                     if (testarSorte(p)) {
                                         d->criatura.energia -= 4;
                                         if (d->criatura.energia <= 0) {
-                                            printf("\nVOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            printf("\nVOCÊ TEVE SORTE E FERIU O(A) %s EM 4.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n", d->criatura.nome);
                                             d->concluido = 1;
                                             concluidos += 1;
                                         } else {
-                                            printf("\nVOCÊ TEVE SORTE E FERIU A CRIATURA EM 4.\n");
+                                            printf("\nVOCÊ TEVE SORTE E FERIU O(A) %s EM 4.\n", d->criatura.nome);
                                         }
                                     } else {
                                         d->criatura.energia -= 1;
                                         if (d->criatura.energia <= 0) {
-                                            printf("\nVOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                            printf("\nVOCÊ FOI AZARADO E FERIU O(A) %s EM 1.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n", d->criatura.nome);
                                             d->concluido = 1;
                                             concluidos += 1;
                                         } else {
-                                            printf("\nVOCÊ FOI AZARADO E FERIU A CRIATURA EM 1.\n");
+                                            printf("\nVOCÊ FOI AZARADO E FERIU O(A) %s EM 1.\n", d->criatura.nome);
                                         }
                                     }
                                 } else {
@@ -228,11 +247,11 @@ void batalha(Personagem *p, Desafio *d) {
                             case '2':
                                 d->criatura.energia -= 2;
                                 if (d->criatura.energia <= 0) {
-                                    printf("\nVOCÊ FERIU A CRIATURA EM 2.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n");
+                                    printf("\nVOCÊ FERIU O(A) %s EM 2.\nPARABÉNS VOCÊ VENCEU A BATALHA!\n", d->criatura.nome);
                                     d->concluido = 1;
                                     concluidos += 1;
                                 } else {
-                                    printf("\nVOCÊ FERIU A CRIATURA EM 2.\n");
+                                    printf("\nVOCÊ FERIU O(A) %s EM 2.\n", d->criatura.nome);
                                 }
                                 break;
                             default:
@@ -256,16 +275,16 @@ void batalha(Personagem *p, Desafio *d) {
                                     if (testarSorte(p)) {
                                         p->energia -= 1;
                                         if (p->energia <= 0) {
-                                            printf("\nVOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\nVOCÊ MORREU!\n");
+                                            printf("\nVOCÊ TEVE SORTE E O(A) %s ESQUIVOU E FERIU VOCÊ EM 1.\nVOCÊ MORREU!\n", d->criatura.nome);
                                         } else {
-                                            printf("\nVOCÊ TEVE SORTE E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 1.\n");
+                                            printf("\nVOCÊ TEVE SORTE E O(A) %s ESQUIVOU E FERIU VOCÊ EM 1.\n", d->criatura.nome);
                                         }
                                     } else {
                                         p->energia -= 3;
                                         if (p->energia <= 0) {
-                                            printf("\nVOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\nVOCÊ MORREU!\n");
+                                            printf("\nVOCÊ FOI AZARADO E O(A) %s ESQUIVOU E FERIU VOCÊ EM 3.\nVOCÊ MORREU!\n", d->criatura.nome);
                                         } else {
-                                            printf("\nVOCÊ FOI AZARADO E A CRIATURA ESQUIVOU E FERIU VOCÊ EM 3.\n");
+                                            printf("\nVOCÊ FOI AZARADO E O(A) %s ESQUIVOU E FERIU VOCÊ EM 3.\n", d->criatura.nome);
                                         }
                                     }
                                 } else {
@@ -275,9 +294,9 @@ void batalha(Personagem *p, Desafio *d) {
                             case '2':
                                 p->energia -= 2;
                                 if (p->energia <= 0) {
-                                    printf("\nA CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\nVOCÊ MORREU!\n");
+                                    printf("\nO(A) %s ESQUIVOU E FERIU VOCÊ EM 2.\nVOCÊ MORREU!\n", d->criatura.nome);
                                 } else {
-                                    printf("\nA CRIATURA ESQUIVOU E FERIU VOCÊ EM 2.\n");
+                                    printf("\nO(A) %s ESQUIVOU E FERIU VOCÊ EM 2.\n", d->criatura.nome);
                                 }
                                 break;
                             default:
@@ -290,7 +309,8 @@ void batalha(Personagem *p, Desafio *d) {
                     }
                     break;
                 case '2':
-                    ajuda();
+                    // TODO (Felipe Vieira#9#): Fazer a chamada da função usarPocaoEnergia(Personagem *p)
+                    printf("USAR POÇÃO DE ENERGIA");
                     system("pause");
                     break;
                 default:
@@ -298,7 +318,7 @@ void batalha(Personagem *p, Desafio *d) {
                     getche();
             }
             system("cls");
-        } while(opcao != '1' && opcao != '2');
+        } while(opcao != '1');
     }
 }
 
@@ -317,7 +337,8 @@ void desafio(Personagem *personagem, Desafio *d) {
         d->concluido = 1;
         concluidos += 1;
     } else {
-        printf("Voce errou.\n");
+        personagem->energia -= 2;
+        printf("Você errou e perdeu 2 pontos de ENERGIA.\n");
         system("pause");
     }
     fflush(stdin);
@@ -333,6 +354,7 @@ void game_over() {
 
     char msg[500];
 
+    system("cls");
     while (fgets(msg, sizeof(msg), f) != NULL) {
         printf("%s", msg);
     }
@@ -345,7 +367,7 @@ void interface_personagem(Personagem personagem) {
     int opcao;
     do {
         if (concluidos == 10) {
-            printf("VOCÊ VENCEU O JOGO! PARABÉNS\n");
+            printf("VOCÊ CONCLUIU O JOGO! PARABÉNS\n");
             break;
         }
         if (personagem.energia <= 0) {
@@ -356,15 +378,17 @@ void interface_personagem(Personagem personagem) {
         printf("STATUS DO PERSONAGEM:\n");
         printf("-----------------------------------\n");
         printf("PERSONAGEM: %s\n", personagem.nome);
-        printf("ENERGIA: %d\n", personagem.energia);
+        printf("ENERGIA: %d/%d\n", personagem.energia, personagem.energia_max);
         printf("HABILIDADE: %d\n", personagem.habilidade);
         printf("SORTE: %d\n", personagem.sorte);
+        printf("POÇÕES DE ENERGIA: %d/5\n", personagem.pocoes_utilizadas);
         printf("\n");
         printf("DESAFIOS (CONCLUIDOS/TOTAL): %d/10\n", concluidos);
         printf("-----------------------------------\n");
         printf("1 - INICIAR DESAFIO\n");
-        printf("2 - SALVAR JOGO\n");
-        printf("3 - SAIR\n");
+        printf("2 - USAR POÇÃO DE ENERGIA\n");
+        printf("3 - SALVAR JOGO\n");
+        printf("4 - SAIR\n");
         printf("OPÇÃO: ");
 
         opcao = getche();
@@ -384,16 +408,20 @@ void interface_personagem(Personagem personagem) {
                 }
                 break;
             case '2':
+                usarPocaoEnergia(&personagem);
+                system("pause");
+                break;
+            case '3':
                 save(personagem);
                 save_desafios(desafios);
                 break;
-            case '3':
+            case '4':
                 break;
             default:
                 printf("\nOpção inválida!\n");
                 system("pause");
         }
-    } while (opcao != '3');
+    } while (opcao != '4');
 
 }
 
@@ -431,7 +459,10 @@ void novo_jogo() {
                 } while (strlen(jogador.nome) < 1);
                 jogador.habilidade = dado() + 6;
                 jogador.energia = dado() + dado() + 12;
+                jogador.energia_max = jogador.energia;
                 jogador.sorte = dado() + 6;
+                getPocaoEnergia(&jogador);
+                jogador.pocoes_utilizadas = 0;
                 save(jogador);
                 load_desafios_bck();
                 system("cls");
