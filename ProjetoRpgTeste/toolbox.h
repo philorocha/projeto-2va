@@ -309,8 +309,7 @@ void batalha(Personagem *p, Desafio *d) {
                     }
                     break;
                 case '2':
-                    // TODO (Felipe Vieira#9#): Fazer a chamada da função usarPocaoEnergia(Personagem *p)
-                    printf("USAR POÇÃO DE ENERGIA");
+                    usarPocaoEnergia(p);
                     system("pause");
                     break;
                 default:
