@@ -380,7 +380,7 @@ void interface_personagem(Personagem personagem) {
         printf("ENERGIA: %d/%d\n", personagem.energia, personagem.energia_max);
         printf("HABILIDADE: %d\n", personagem.habilidade);
         printf("SORTE: %d\n", personagem.sorte);
-        printf("POÇÕES DE ENERGIA: %d/5\n", personagem.pocoes_utilizadas);
+        printf("POÇÕES UTILIZADAS: %d/5\n", personagem.pocoes_utilizadas);
         printf("\n");
         printf("DESAFIOS (CONCLUIDOS/TOTAL): %d/10\n", concluidos);
         printf("-----------------------------------\n");

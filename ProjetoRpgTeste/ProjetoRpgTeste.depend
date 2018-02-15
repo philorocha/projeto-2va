@@ -87,3 +87,18 @@
 
 1518275302 c:\users\felip\documents\c\projeto-ip-rpg\projetorpgteste\personagens.h
 
+1518727951 source:c:\users\felipe\documents\c\projeto-ip-rpg\projetorpgteste\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"toolbox.h"
+	"personagens.h"
+
+1518729267 c:\users\felipe\documents\c\projeto-ip-rpg\projetorpgteste\toolbox.h
+	<conio.h>
+	"personagens.h"
+
+1518726123 c:\users\felipe\documents\c\projeto-ip-rpg\projetorpgteste\personagens.h
+
