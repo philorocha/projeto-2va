@@ -482,6 +482,7 @@ void novo_jogo() {
                 jogador.pocoes_utilizadas = 0;
                 save(jogador);
                 load_desafios_bck();
+                save_desafios(desafios);
                 system("cls");
                 introducao();
                 system("pause");
