@@ -361,12 +361,30 @@ void game_over() {
     fclose(f);
 }
 
+void zerada() {
+    FILE *f = fopen("zerada.txt", "r");
+
+    if (!f) {
+        printf("Erro ao tentar ler o arquivo zerada.txt!\n");
+        exit(1);
+    }
+
+    char msg[500];
+
+    system("cls");
+    while (fgets(msg, sizeof(msg), f) != NULL) {
+        printf("%s", msg);
+    }
+
+    fclose(f);
+}
+
 void interface_personagem(Personagem personagem) {
     int i;
     int opcao;
     do {
         if (concluidos == 10) {
-            printf("VOCÊ CONCLUIU O JOGO! PARABÉNS\n");
+            zerada();
             break;
         }
         if (personagem.energia <= 0) {
