@@ -18,7 +18,7 @@ typedef struct {
 } Criatura;
 
 typedef struct {
-    char texto[2500];
+    char texto[4000];
     int concluido; /* Se esse desafio foi concluido 1, caso contrário 0 */
     Criatura criatura;
     int resposta;
